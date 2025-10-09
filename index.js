@@ -32,7 +32,27 @@ async function run() {
         app.post('/users', async (req, res) => {
             const body = req.body;
             console.log(body)
-            const result=await userCollection.insertOne(body)
+            const result = await userCollection.insertOne(body)
+            res.send(result);
+        })
+
+        app.patch('/users', async (req, res) => {
+            const email = req.body.email
+            console.log(email)
+            const query = { email }
+            const updateDoc = {
+                $set: {
+                    lastSignInTime: req.body.login_time
+                },
+            };
+            const result = await userCollection.updateOne(query, updateDoc);
+            res.send(result)
+
+
+        })
+
+        app.get('/users', async (req, res) => {
+            const result = await userCollection.find().toArray();
             res.send(result);
         })
 
