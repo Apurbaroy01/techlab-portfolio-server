@@ -28,6 +28,7 @@ async function run() {
 
         const userCollection = client.db("techlabs").collection("users");
         const heroCollection = client.db("techlabs").collection("hero");
+        const teamCollection = client.db("techlabs").collection("teamMembers");
 
         // user api--------------------------
         app.post('/users', async (req, res) => {
@@ -85,7 +86,28 @@ async function run() {
             };
             const result = await heroCollection.updateOne(query, updateDoc);
             res.send(result)
-        })
+        });
+
+        // team member api--------------------------
+
+        app.post('/teamMembers', async(req, res) => {
+            const body = req.body;
+            console.log(body)
+            const result =await teamCollection.insertOne(body)
+            res.send(result);
+        });
+
+        app.get('/teamMembers', async(req, res) => {
+            const result =await teamCollection.find().toArray();
+            res.send(result);
+        });
+
+        app.delete('/teamMembers/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await teamCollection.deleteOne(query);
+            res.send(result);
+        });
 
 
     }
