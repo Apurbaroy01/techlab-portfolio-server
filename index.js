@@ -29,6 +29,8 @@ async function run() {
         const userCollection = client.db("techlabs").collection("users");
         const heroCollection = client.db("techlabs").collection("hero");
         const teamCollection = client.db("techlabs").collection("teamMembers");
+        const projectsCollection = client.db("techlabs").collection("projects");
+        const servicesCollection = client.db("techlabs").collection("services");
 
         // user api--------------------------
         app.post('/users', async (req, res) => {
@@ -109,6 +111,47 @@ async function run() {
             res.send(result);
         });
 
+        // projects api--------------------------
+
+        app.post('/projects', async(req, res) => {
+            const body = req.body;
+            console.log(body)
+            const result =await projectsCollection.insertOne(body)
+            res.send(result);
+        });
+
+        app.get('/projects', async(req, res) => {
+            const result =await projectsCollection.find().toArray();
+            res.send(result);
+        });
+
+        app.delete('/projects/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await projectsCollection.deleteOne(query);
+            res.send(result);
+        });
+
+        // services api--------------------------
+
+        app.post('/services', async(req, res) => {
+            const body = req.body;
+            console.log(body)
+            const result =await servicesCollection.insertOne(body)
+            res.send(result);
+        });
+
+        app.get('/services', async(req, res) => {
+            const result =await servicesCollection.find().toArray();
+            res.send(result);
+        });
+
+        app.delete('/services/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await servicesCollection.deleteOne(query);
+            res.send(result);
+        });
 
     }
     catch (error) {
