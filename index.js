@@ -31,6 +31,7 @@ async function run() {
         const teamCollection = client.db("techlabs").collection("teamMembers");
         const projectsCollection = client.db("techlabs").collection("projects");
         const servicesCollection = client.db("techlabs").collection("services");
+        const contactMessageCollection = client.db("techlabs").collection("contactMessage");
 
         // user api--------------------------
         app.post('/users', async (req, res) => {
@@ -150,6 +151,19 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await servicesCollection.deleteOne(query);
+            res.send(result);
+        });
+
+        // contact message api--------------------------
+        app.post('/contactMessage', async(req, res) => {
+            const body = req.body;
+            console.log(body)
+            const result =await contactMessageCollection.insertOne(body)
+            res.send(result);
+        });
+
+        app.get('/contactMessage', async(req, res) => {
+            const result =await contactMessageCollection.find().toArray();
             res.send(result);
         });
 
