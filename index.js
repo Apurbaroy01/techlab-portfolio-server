@@ -1,16 +1,61 @@
 const express = require('express')
 const cors = require('cors')
 const app = express()
-const port = process.env.port || 5000;
-
+const dotenv = require('dotenv');
+const nodemailer = require("nodemailer");
+const port = process.env.PORT || 5000;
+dotenv.config();
 
 app.use(cors())
 app.use(express.json())
 
+const emailTransporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_APP_PASS,
+    },
+});
+
+app.post('/replyMessage', async (req, res) => {
+    const { email, name, subject, replyMessage } = req.body;
+
+    const paymentInfo = {
+        name: name,
+        user: email,
+        subject: subject,
+        replyMessage: replyMessage,
+    }
+
+    const emailObj = {
+        from: `"zap email sender"${process.env.ZAP_EMAIL}`,
+        to: paymentInfo.user,
+        subject: subject,
+        html: `
+            <P> Thank you for your  message </p>
+            <br/>
+            <br/>
+            <h1>${replyMessage}<h1/>
+            
+        `
+    }
+
+
+    try {
+        const emailInfo = await emailTransporter.sendMail(emailObj)
+        console.log("email send", emailInfo.messageId)
+        res.send({ result: "success" })
+    }
+    catch (err) {
+        console.log("email send error")
+        res.send({ result: 'email filed' })
+    }
+})
+
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const uri = "mongodb+srv://techlabs12:techlabs12@cluster0.4gy1j38.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = `mongodb+srv://${process.env.USER}:${process.env.PASS}@cluster0.4gy1j38.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -43,8 +88,7 @@ async function run() {
 
         app.patch('/users', async (req, res) => {
             const email = req.body.email
-            console.log(email)
-            const query = { email }
+            const query = { email: email }
             const updateDoc = {
                 $set: {
                     lastSignInTime: req.body.login_time
@@ -70,8 +114,8 @@ async function run() {
         //     res.send(result);
         // })
 
-        app.get('/hero', async(req, res) => {
-            const result =await heroCollection.find().toArray();
+        app.get('/hero', async (req, res) => {
+            const result = await heroCollection.find().toArray();
             res.send(result);
         })
 
@@ -80,7 +124,7 @@ async function run() {
 
             const { companies, projects, subtitle, tagline, title, years } = req.body;
             console.log(req.body)
-            
+
             const query = { _id: new ObjectId(id) }
             const updateDoc = {
                 $set: {
@@ -93,15 +137,15 @@ async function run() {
 
         // team member api--------------------------
 
-        app.post('/teamMembers', async(req, res) => {
+        app.post('/teamMembers', async (req, res) => {
             const body = req.body;
             console.log(body)
-            const result =await teamCollection.insertOne(body)
+            const result = await teamCollection.insertOne(body)
             res.send(result);
         });
 
-        app.get('/teamMembers', async(req, res) => {
-            const result =await teamCollection.find().toArray();
+        app.get('/teamMembers', async (req, res) => {
+            const result = await teamCollection.find().toArray();
             res.send(result);
         });
 
@@ -114,15 +158,15 @@ async function run() {
 
         // projects api--------------------------
 
-        app.post('/projects', async(req, res) => {
+        app.post('/projects', async (req, res) => {
             const body = req.body;
             console.log(body)
-            const result =await projectsCollection.insertOne(body)
+            const result = await projectsCollection.insertOne(body)
             res.send(result);
         });
 
-        app.get('/projects', async(req, res) => {
-            const result =await projectsCollection.find().toArray();
+        app.get('/projects', async (req, res) => {
+            const result = await projectsCollection.find().toArray();
             res.send(result);
         });
 
@@ -135,15 +179,15 @@ async function run() {
 
         // services api--------------------------
 
-        app.post('/services', async(req, res) => {
+        app.post('/services', async (req, res) => {
             const body = req.body;
             console.log(body)
-            const result =await servicesCollection.insertOne(body)
+            const result = await servicesCollection.insertOne(body)
             res.send(result);
         });
 
-        app.get('/services', async(req, res) => {
-            const result =await servicesCollection.find().toArray();
+        app.get('/services', async (req, res) => {
+            const result = await servicesCollection.find().toArray();
             res.send(result);
         });
 
@@ -155,15 +199,15 @@ async function run() {
         });
 
         // contact message api--------------------------
-        app.post('/contactMessage', async(req, res) => {
+        app.post('/contactMessage', async (req, res) => {
             const body = req.body;
             console.log(body)
-            const result =await contactMessageCollection.insertOne(body)
+            const result = await contactMessageCollection.insertOne(body)
             res.send(result);
         });
 
-        app.get('/contactMessage', async(req, res) => {
-            const result =await contactMessageCollection.find().toArray();
+        app.get('/contactMessage', async (req, res) => {
+            const result = await contactMessageCollection.find().toArray();
             res.send(result);
         });
 
