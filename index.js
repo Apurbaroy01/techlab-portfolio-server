@@ -26,10 +26,12 @@ app.post('/replyMessage', async (req, res) => {
         subject: subject,
         replyMessage: replyMessage,
     }
+    console.log(paymentInfo)
 
     const emailObj = {
         from: `"zap email sender"${process.env.ZAP_EMAIL}`,
         to: paymentInfo.user,
+        name: name,
         subject: subject,
         html: `
             <P> Thank you for your  message </p>
@@ -68,8 +70,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        await client.connect();
-        console.log("Pinged your deployment. You successfully connected to MongoDB✅!");
+        // await client.connect();
+        // console.log("Pinged your deployment. You successfully connected to MongoDB✅!");
 
         const userCollection = client.db("techlabs").collection("users");
         const heroCollection = client.db("techlabs").collection("hero");
